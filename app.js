@@ -458,22 +458,48 @@
           if (ok) shared();
         } }, '📋 Sao chép nội dung gửi Zalo');
     var shareBtn = h('button', { class: 'btn small', onclick: function () {
-      // Lựa chọn phụ: gửi kèm ảnh qua bảng chia sẻ của điện thoại.
-      UI.shareToZalo(text, info.photos).then(function (r) {
+      UI.shareToZalo(text, []).then(function (r) {
         if (r === 'shared') { status.className = 'small muted'; status.textContent = 'Đã mở bảng chia sẻ. Chọn Zalo → nhóm quán → Gửi.'; shared(); }
         else if (r === 'copied') { status.className = 'small muted'; status.textContent = 'Máy không hỗ trợ chia sẻ. Đã sao chép nội dung.'; }
       });
-    } }, info.photos.length ? '📤 Gửi kèm ảnh (bảng chia sẻ)' : '📤 Gửi qua bảng chia sẻ');
+    } }, '📤 Gửi qua bảng chia sẻ');
+
+    // Ra ca có ảnh: nút chính gửi thẳng ảnh vào Zalo. Zalo bỏ phần chữ khi nhận kèm ảnh, nên app vẽ
+    // thêm 1 ảnh thông tin (đứng đầu bộ ảnh) và đồng thời sao chép nội dung để dán thêm nếu cần link bản đồ.
+    var hasPhotos = kind === 'out' && info.photos.length > 0;
+    var bundle = null;
+    if (hasPhotos) {
+      var all = text.split('\n'), cardLines = all.slice(1, -1).filter(function (l) { return !/https?:\/\//.test(l); });
+      if (info.loc) cardLines.push('Tọa độ: ' + info.loc.lat.toFixed(5) + ', ' + info.loc.lng.toFixed(5));
+      bundle = [UI.infoCard(all[0].replace(/^\S+\s/, ''), cardLines, window.STORE_NAME || d.storeName)].concat(info.photos);
+      bundle.infoFirst = true;
+    }
+    var photoBtn = hasPhotos ? h('button', { class: 'btn primary block big', onclick: function () {
+      UI.copyTextSync(text); // chạy xong ngay trong lần bấm, trước khi mở bảng chia sẻ
+      UI.shareToZalo(text, bundle).then(function (r) {
+        if (r === 'shared') {
+          status.className = 'alert ok small';
+          status.textContent = 'Đã gửi ' + bundle.length + ' ảnh (ảnh đầu là thông tin ra ca). Nội dung chữ cũng đã được sao chép: muốn có link bản đồ, trong Zalo nhấn giữ ô nhập tin → Dán → Gửi.';
+          shared();
+        } else if (r === 'copied' || r === 'failed') {
+          status.className = 'alert warn small';
+          status.textContent = 'Điện thoại không gửi được ảnh qua bảng chia sẻ. Dùng nút "Sao chép & mở nhóm Zalo" bên dưới (gửi link ảnh).';
+        }
+      });
+    } }, '📤 Gửi ảnh & thông tin vào Zalo') : null;
+    if (hasPhotos) mainBtn.className = 'btn block';
+
     var body = h('div', { class: 'stack' },
       w.length ? h('div', { class: 'alert warn' }, h('ul', null, w.map(function (x) { return h('li', null, x); }))) : null,
-      h('p', { class: 'small' }, link ? 'Bấm nút dưới: nội dung được sao chép và nhóm Zalo của quán mở ra. Trong Zalo nhấn giữ ô nhập tin → Dán → Gửi.'
+      h('p', { class: 'small' }, hasPhotos ? 'Bấm nút dưới → chọn Zalo → chọn nhóm của quán → Gửi. Ảnh đầu tiên chứa thông tin ra ca của bạn.'
+        : link ? 'Bấm nút dưới: nội dung được sao chép và nhóm Zalo của quán mở ra. Trong Zalo nhấn giữ ô nhập tin → Dán → Gửi.'
         : 'Bấm nút dưới để sao chép nội dung, rồi dán vào nhóm Zalo của quán.'),
-      h('pre', { class: 'share-preview' }, text),
-      info.photos.length ? h('div', { class: 'thumbs' }, info.photos.map(function (p) { return h('img', { src: p, alt: '' }); })) : null,
-      mainBtn, status,
+      hasPhotos ? h('div', { class: 'thumbs' }, bundle.map(function (p) { return h('img', { src: p, alt: '' }); })) : h('pre', { class: 'share-preview' }, text),
+      photoBtn, mainBtn, status,
+      hasPhotos ? h('details', { class: 'small' }, h('summary', null, 'Xem nội dung chữ'), h('pre', { class: 'share-preview' }, text)) : null,
       h('div', { class: 'row' },
         h('button', { class: 'btn small', onclick: function () { var ok = UI.copyTextSync(text); UI.toast(ok ? 'Đã sao chép nội dung' : 'Không sao chép được', ok ? 'ok' : 'err'); } }, 'Sao chép nội dung'),
-        shareBtn));
+        hasPhotos ? null : shareBtn));
     UI.modal(okText + (res.queued ? ' (lưu tạm)' : ''), body, [{ label: 'Xong', value: true }]).then(function () { go('#/home'); });
   }
   /* ---------- M04 Công của tôi ---------- */

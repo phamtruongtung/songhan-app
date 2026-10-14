@@ -180,6 +180,37 @@
     });
   }
 
+  /* Ảnh thông tin ra ca: Zalo bỏ phần chữ khi chia sẻ kèm ảnh, nên thông tin được vẽ thành 1 ảnh gửi cùng bộ ảnh. */
+  function infoCard(title, lines, footer) {
+    var W = 1080, pad = 64, fs = 44, lh = 62;
+    var c = document.createElement('canvas'), g = c.getContext('2d');
+    var font = function (w, s) { return w + ' ' + s + 'px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'; };
+    // Ngắt dòng theo bề rộng ảnh.
+    g.font = font(500, fs);
+    var wrapped = [];
+    lines.forEach(function (l) {
+      var words = String(l).split(' '), cur = '';
+      words.forEach(function (w) {
+        var t = cur ? cur + ' ' + w : w;
+        if (g.measureText(t).width > W - pad * 2 && cur) { wrapped.push(cur); cur = w; } else cur = t;
+      });
+      wrapped.push(cur);
+    });
+    var headH = 190, H = headH + pad + wrapped.length * lh + pad + 70;
+    c.width = W; c.height = H;
+    g.fillStyle = '#faf4e6'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#4a1d12'; g.fillRect(0, 0, W, headH);
+    g.fillStyle = '#f3e3b5'; g.font = font(600, 36); g.textBaseline = 'top';
+    g.fillText(footer || '', pad, 40);
+    g.fillStyle = '#ffffff'; g.font = font(800, 64);
+    g.fillText(title, pad, 92, W - pad * 2);
+    g.fillStyle = '#2a1a14'; g.font = font(500, fs);
+    wrapped.forEach(function (l, i) { g.fillText(l, pad, headH + pad + i * lh, W - pad * 2); });
+    g.fillStyle = '#7a6a60'; g.font = font(400, 30);
+    g.fillText('Ảnh do ứng dụng tạo lúc ' + fmtTs(Date.now()).slice(11, 16) + ' ' + fmtDateVN(fmtTs(Date.now()).slice(0, 10)), pad, H - 70);
+    return c.toDataURL('image/jpeg', 0.9);
+  }
+
   function dataUrlToFile(dataUrl, name) {
     var parts = String(dataUrl).split(','), bin = atob(parts[1]), arr = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
@@ -189,7 +220,7 @@
   /* Chia sẻ qua bảng chia sẻ của điện thoại (người dùng chọn Zalo → nhóm quán → Gửi).
    * Trả về 'shared' | 'cancel' | 'copied' | 'failed'. */
   function shareToZalo(text, photos) {
-    var files = (photos || []).map(function (d, i) { return dataUrlToFile(d, 'hien-trang-' + (i + 1) + '.jpg'); });
+    var files = (photos || []).map(function (d, i) { return dataUrlToFile(d, (i === 0 && photos.infoFirst ? 'thong-tin-ra-ca' : 'hien-trang-' + (photos.infoFirst ? i : i + 1)) + '.jpg'); });
     var data = { text: text };
     if (files.length && navigator.canShare && navigator.canShare({ files: files })) data.files = files;
     if (navigator.share) {
@@ -243,5 +274,5 @@
     } }, label || 'Xem ảnh');
   }
 
-  window.UI = { h: h, money: money, toast: toast, modal: modal, confirmBox: confirmBox, promptBox: promptBox, moneyInput: moneyInput, field: field, select: select, badge: badge, empty: empty, spinner: spinner, pickImage: pickImage, takePhoto: takePhoto, shareToZalo: shareToZalo, copyText: copyText, copyTextSync: copyTextSync, downloadCsv: downloadCsv, imgLink: imgLink };
+  window.UI = { h: h, money: money, toast: toast, modal: modal, confirmBox: confirmBox, promptBox: promptBox, moneyInput: moneyInput, field: field, select: select, badge: badge, empty: empty, spinner: spinner, pickImage: pickImage, takePhoto: takePhoto, shareToZalo: shareToZalo, infoCard: infoCard, copyText: copyText, copyTextSync: copyTextSync, downloadCsv: downloadCsv, imgLink: imgLink };
 })();
