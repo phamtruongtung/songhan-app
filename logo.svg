@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Đà Nẵng – Bê Thui Sông Hàn">
+  <!-- Vẽ lại theo logo quán; thay bằng file gốc (logo.png) khi có để sắc nét nhất. -->
+  <defs>
+    <path id="arcTop" d="M 38 100 A 62 62 0 0 1 162 100"/>
+    <path id="arcBottom" d="M 26 100 A 74 74 0 0 0 174 100"/>
+  </defs>
+  <circle cx="100" cy="100" r="100" fill="#4a1714"/>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#f3e3b5" stroke-width="3"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#f3e3b5" stroke-width="1.6"/>
+  <text font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="19" fill="#f3e3b5" letter-spacing="1.5">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">ĐÀ NẴNG</textPath>
+  </text>
+  <text font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="16.5" fill="#f3e3b5" letter-spacing="0.6">
+    <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">BÊ THUI SÔNG HÀN</textPath>
+  </text>
+  <clipPath id="disc"><circle cx="102" cy="102" r="50"/></clipPath>
+  <circle cx="102" cy="102" r="50" fill="#f3e3b5"/>
+  <!-- đầu bò nhìn nghiêng sang phải: sừng trái cong lên, sừng phải chĩa ngang, mõm vát xuống -->
+  <path clip-path="url(#disc)" fill="#4a1714" d="M68 66 C67 77 72 85 80 90 C74 102 72 122 72 156 L120 156 C119 142 123 134 132 128 C138 124 139 116 135 108 C132 102 128 98 126 94 C134 93 142 92 150 87 C143 84 133 83 124 84 C116 78 104 76 92 79 C82 78 73 74 68 66 Z"/>
+</svg>

@@ -1,0 +1,10 @@
+{
+  "name": "Bê Thui Sông Hàn – Quản lý",
+  "short_name": "Sông Hàn",
+  "start_url": "./index.html#/home",
+  "display": "standalone",
+  "background_color": "#4a1d12",
+  "theme_color": "#4a1d12",
+  "lang": "vi",
+  "icons": [{ "src": "logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4a1d12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Bê Thui Sông Hàn</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
+  <link rel="stylesheet" href="styles.css">
+  <!--BUILD:CONFIG-->
+  <script src="config.js"></script>
+  <!--/BUILD:CONFIG-->
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toasts" aria-live="polite"></div>
+  <script src="client-core.js"></script>
+  <script src="ui.js"></script>
+  <script src="api.js"></script>
+  <script src="xlsx-lite.js"></script>
+  <script src="app.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol === 'https:' && (window.APP_CONFIG || {}).mode !== 'demo') {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>
